@@ -1,19 +1,72 @@
-let express = require('express')
-let app = express()
-let reloadMagic = require('./reload-magic.js')
+let express = require("express");
+let app = express();
+let reloadMagic = require("./reload-magic.js");
+let Twit = require("twit");
+var bodyParser = require("body-parser");
 
-reloadMagic(app)
+app.use("/", express.static("build/dist"));
 
-app.use('/', express.static('build')); // Needed for the HTML and JS files
-app.use('/', express.static('public')); // Needed for local assets
+let config = require("./config");
+
+let tweets = [];
+
+reloadMagic(app);
+
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+app.use("/", express.static("build")); // Needed for the HTML and JS files
+app.use("/", express.static("public")); // Needed for local assets
 
 // Your endpoints go after this line
+app.post("/", (req, res) => {
+  let searchTerm = req.body.searchTerm;
+  var T = new Twit(config);
+  var params = {
+    q: searchTerm,
+    count: 1
+  };
+  T.get("search/tweets", params, gotData);
+  function gotData(err, data, response) {
+    console.log(data);
+    const tweetData = {
+      id_str: data.statuses[0].id_str,
+      user: {
+        name: data.statuses[0].user.name,
+        screen_name: data.statuses[0].user.screen_name,
+        profile_image_url: data.statuses[0].user.profile_image_url
+      },
+      text: data.statuses[0].text,
+      created_at: data.statuses[0].created_at,
+      favorite_count: "" + data.statuses[0].favorite_count,
+      retweet_count: "" + data.statuses[0].retweet_count,
+      entities: {
+        media: [],
+        urls: data.statuses[0].entities.urls,
+        user_mentions: [],
+        hashtags: data.statuses[0].entities.hashtags,
+        symbols: data.statuses[0].entities.symbols
+      }
+    };
+    tweets.unshift(tweetData);
+    // console.log("tweets:", tweets);
+    tweets = tweets.filter(
+      (v, i, a) =>
+        a.findIndex(
+          t => t.id_str === v.id_str && t.user.name === v.user.name
+        ) === i
+    );
+    tweets = tweets.slice(0, 20);
+    res.send(JSON.stringify({ tweets }));
+  }
+});
 
 // Your endpoints go before this line
 
-app.all('/*', (req, res, next) => { // needed for react router
-    res.sendFile(__dirname + '/build/index.html');
-})
+app.all("/*", (req, res, next) => {
+  // needed for react router
+  res.sendFile(__dirname + "/build/index.html");
+});
 
-
-app.listen(4000, '0.0.0.0', () => { console.log("Server running on port 4000") })
+app.listen(4000, "0.0.0.0", () => {
+  console.log("Server running on port 4000");
+});
