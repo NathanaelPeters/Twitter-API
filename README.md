@@ -1,5 +1,9 @@
 To start the server, run `nodemon server.js`
 
-Modify the `server.js` file to add endpoints
+The 3 main files I used were:
 
-The frontend code goes in the `/src` directory
+App.jsx in the src folder for frontend work.
+
+Server.js for backend stuff and communicating with the Twitter API
+
+and main.css to make the incoming tweets look like real tweets.
