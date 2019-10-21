@@ -22,7 +22,6 @@ class UnconnectedApp extends Component {
       });
       let body = await response.text();
       let tweets = JSON.parse(body);
-      console.log(tweets);
       this.props.dispatch({
         type: "add-tweet",
         tweets: tweets
@@ -31,7 +30,6 @@ class UnconnectedApp extends Component {
   };
 
   searchInput = evt => {
-    console.log("Searching for:", evt.target.value);
     this.setState({ searchTerm: evt.target.value });
   };
 
@@ -83,7 +81,6 @@ class UnconnectedApp extends Component {
           ))}
         </div>
       );
-      //});
     }
     return <div> Loading... </div>;
   }
