@@ -7,14 +7,12 @@ class UnconnectedApp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tweets: [],
       searchTerm: "Donald Trump"
     };
   }
   componentDidMount = () => {
     setInterval(async evt => {
       let data = { searchTerm: this.state.searchTerm };
-      let searchTerm = "Donald Trump";
       let response = await fetch("/", {
         method: "POST",
         headers: {
@@ -29,7 +27,7 @@ class UnconnectedApp extends Component {
         type: "add-tweet",
         tweets: tweets
       });
-    }, 6000);
+    }, 7000);
   };
 
   searchInput = evt => {
