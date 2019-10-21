@@ -12,12 +12,11 @@ let tweets = [];
 
 reloadMagic(app);
 
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-app.use("/", express.static("build")); // Needed for the HTML and JS files
-app.use("/", express.static("public")); // Needed for local assets
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/", express.static("build"));
+app.use("/", express.static("public"));
 
-// Your endpoints go after this line
 app.post("/", (req, res) => {
   let searchTerm = req.body.searchTerm;
   var T = new Twit(config);
@@ -48,7 +47,7 @@ app.post("/", (req, res) => {
       }
     };
     tweets.unshift(tweetData);
-    // console.log("tweets:", tweets);
+    console.log("tweets:", tweets);
     tweets = tweets.filter(
       (v, i, a) =>
         a.findIndex(
@@ -60,10 +59,7 @@ app.post("/", (req, res) => {
   }
 });
 
-// Your endpoints go before this line
-
 app.all("/*", (req, res, next) => {
-  // needed for react router
   res.sendFile(__dirname + "/build/index.html");
 });
 
