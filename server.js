@@ -26,7 +26,6 @@ app.post("/", (req, res) => {
   };
   T.get("search/tweets", params, gotData);
   function gotData(err, data, response) {
-    console.log(data);
     const tweetData = {
       id_str: data.statuses[0].id_str,
       user: {
@@ -47,7 +46,6 @@ app.post("/", (req, res) => {
       }
     };
     tweets.unshift(tweetData);
-    console.log("tweets:", tweets);
     tweets = tweets.filter(
       (v, i, a) =>
         a.findIndex(
